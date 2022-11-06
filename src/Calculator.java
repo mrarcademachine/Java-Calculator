@@ -1,8 +1,9 @@
+import java.io.IOException;
 import java.util.Scanner;
 import java.lang.String;
 
 public class Calculator {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException{
         Scanner userInput = new Scanner(System.in);
         System.out.print("Enter a mathematical expression: ");
         String inputString = userInput.nextLine();
@@ -12,12 +13,12 @@ public class Calculator {
     }
 }
 class Main {
-    public static String calc(String input) {
+    public static String calc(String input) throws IOException{
 
         String[] expressionParts = input.split(" ");
 
         if (expressionParts.length != 3) {
-            throw new ArithmeticException("Invalid number of operands and/or operators");
+            throw new IOException("Invalid number of operands and/or operators");
         }
 
         String strNum1 = expressionParts[0];
@@ -27,7 +28,7 @@ class Main {
         int num2;
 
         boolean isArabic = strNum1.matches("[1-9]|10") && strNum2.matches("[1-9]|10");
-        boolean isRoman = strNum1.matches("[IVX]") && strNum2.matches("[IVX]");
+        boolean isRoman = strNum1.matches("[IVX]+") && strNum2.matches("[IVX]+");
         if (isArabic) {
             num1 = Integer.parseInt(strNum1);
             num2 = Integer.parseInt(strNum2);
@@ -39,11 +40,11 @@ class Main {
             num1 = romanObj1.getArabic();
             num2 = romanObj2.getArabic();
         } else {
-            throw new ArithmeticException("Not a number");
+            throw new IOException("Not a number");
         }
 
         if (num1 < 1 || num1 > 10 || num2 <1 || num2 > 10) {
-            throw new ArithmeticException("Incompatible number");
+            throw new IOException("Number not supported");
         }
 
         int result = switch (operator) {
@@ -51,7 +52,7 @@ class Main {
             case "-" -> num1 - num2;
             case "*" -> num1 * num2;
             case "/" -> num1 / num2;
-            default -> throw new UnsupportedOperationException();
+            default -> throw new UnsupportedOperationException("Incorrect operator");
         };
 
         if (isArabic) {
@@ -59,6 +60,8 @@ class Main {
         } else
             if (result <= 0)
                 throw new ArithmeticException("Result in Roman cannot be zero or negative");
+            /*  Результат от 11 до 99, кроме чистых десятков, разбивается на десятки и единицы,
+                затем их значение подставляется из enum и складывается в строку */
             if (result > 10 && result < 100 && result % 10 != 0) {
                 String resultTens = Roman.arabicToRoman(result / 10 * 10);
                 String resultOnes = Roman.arabicToRoman(result % 10);
